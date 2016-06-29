@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="200" height="200" viewBox="0 0 200 200" 
+	 xml:space="preserve">
+    <circle cx="100" cy="100" r="98" stroke="grey" stroke-width="4" fill="white" />
+<g transform="translate(50,50) scale(0.8)">
+	<defs>
+		<rect id="SVGID_1_" width="131.803" height="123.83"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  overflow="visible"/>
+	</clipPath>
+	<path clip-path="url(#SVGID_2_)" fill="#3FC45A" d="M91.707,83.33v29.831c0,0.355-0.313,0.669-0.669,0.669H10.669
+		c-0.356,0-0.669-0.313-0.669-0.669V10.67c0-0.357,0.313-0.67,0.669-0.67h80.369c0.355,0,0.669,0.313,0.669,0.67v19.285l10-10V10.67
+		C101.707,4.787,96.921,0,91.038,0H10.669C4.786,0,0,4.787,0,10.67v102.491c0,5.883,4.786,10.669,10.669,10.669h80.369
+		c5.883,0,10.669-4.786,10.669-10.669V73.33L91.707,83.33z"/>
+	
+		<polyline clip-path="url(#SVGID_2_)" fill="none" stroke="#3FC45A" stroke-width="16" stroke-linecap="round" stroke-miterlimit="10" points="123.803,23.929 81.768,65.964 57.202,41.396"/>
+	<polygon clip-path="url(#SVGID_2_)" fill="#3FC45A" points="31.018,19.994 34.404,26.856 41.977,27.956 36.497,33.297 
+		37.791,40.838 31.018,37.278 24.245,40.838 25.539,33.297 20.059,27.956 27.632,26.856 	"/>
+	<polygon clip-path="url(#SVGID_2_)" fill="#3FC45A" points="31.018,50.445 34.404,57.307 41.977,58.407 36.497,63.748 
+		37.791,71.289 31.018,67.729 24.245,71.289 25.539,63.748 20.059,58.407 27.632,57.307 	"/>
+	<polygon clip-path="url(#SVGID_2_)" fill="#3FC45A" points="31.018,80.896 34.404,87.758 41.977,88.857 36.497,94.198 
+		37.791,101.739 31.018,98.18 24.245,101.739 25.539,94.198 20.059,88.857 27.632,87.758 	"/>
+</g>
+</svg>

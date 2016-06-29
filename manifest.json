@@ -1,0 +1,27 @@
+{
+	"manifest_version":2,
+	"name":"monBonCoin",
+	"version":"0.1",
+
+	"description":"WebExtension which hide adds that users don't want to see again in le bon coin",
+	"homepage_url":"https://github.com/fdaligand/monBonCoin",
+	"icons":{
+		"48":"icons/lbc_48.png"
+	},
+
+	"permissions":[
+		"activeTab",
+	],
+
+	"browser_action":{
+		"default_icon":"icons/mbc_icon.svg",
+		"default_title":"Mon Bon Coin !!!",
+		
+
+	}
+
+
+
+
+
+}
