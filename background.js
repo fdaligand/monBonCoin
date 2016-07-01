@@ -1,9 +1,9 @@
 /*
 Open a new tab, and load "my-page.html" into it.
 */
-function parsePage() {
+function parsePage(tab) {
   console.log("injecting");
-   chrome.tabs.sendMessage(2);
+   chrome.tabs.sendMessage(tab.id,"toto");
 }
 
 
