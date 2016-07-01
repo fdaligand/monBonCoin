@@ -1,11 +1,19 @@
 
-debugger;
+
+var buttonPressed = false;
 
 
-function modifyPage(){
-	document.body.style.border = "5px solid red";	
-}
+function modifyPage(msg){
+	console.log("message received")
+	console.log("mesage"+msg)
+	document.body.style.border = "5px solid red";
+	buttonPressed = true;	
+};
 
 chrome.runtime.onMessage.addListener(modifyPage);
 
-document.body.style.border = "5px solid blue";
+if (! buttonPressed ) {
+	document.body.style.border = "5px solid blue";
+}
+
+
