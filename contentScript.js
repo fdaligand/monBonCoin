@@ -1,4 +1,5 @@
 
+var addDict = {};
 
 function injectHideActionScript() {
 /* inject script on web page to manage action when hide button is clicked*/
@@ -10,7 +11,7 @@ function injectHideActionScript() {
 		script.id = "callHideScript";
 		
 		/* When hide button is clicked, it's id, which correspond to the add id, is sent to the content script via postMessage()*/
-		script.innerHTML = 'function sendMessage(id) { message = "button "+id+" cliked";window.postMessage(message,"*");}';
+		script.innerHTML = 'function sendMessage() { message = "button_"+event.target.id+"_cliked";window.postMessage(message,"*");event.preventDefault();}';
 		
 		document.body.appendChild(script);
 	}
@@ -22,9 +23,14 @@ function hideAdd(msg) {
 
 		/*TODO : Hide the add*/
 		console.log("message received:"+msg.data);
+
+		/* Change opacity of the add*/
+		id = msg.data.split('_')[1] //TODO remove this fucking magic number
+		addDict[id].style.opacity = 0.2;
 	}
 	
 };
+
 
 function addHideButton(obj,id) {
 	/* add a clickable button to hide add*/
@@ -32,7 +38,7 @@ function addHideButton(obj,id) {
 	var aside = obj.getElementsByClassName("item_absolute");
 	var button = document.createElement("button")
 	button.id = id;
-	button.setAttribute('onclick','sendMessage(this.id)');
+	button.setAttribute('onclick','sendMessage()');
 	button.innerHTML = "Hide this add";
 
 	aside[0].appendChild(button);
@@ -58,7 +64,7 @@ function modifyPage(msg){
 		var addData = add.getAttribute("data-info");
 		var addInfo = JSON.parse(addData);
 		var addId = addInfo.ad_listid
-
+		addDict[addId] = add;
 		if (!addHideButton(add,addId)) {
 			console.log("error during creation of button for add "+addId);
 		};
