@@ -30,7 +30,7 @@ function hideAdd(msg) {
 		/* Change opacity of the add*/
 		id = msg.data.split('_')[1] //TODO remove this fucking magic number
 		addDict[id].style.opacity = 0.2;
-		hideAdd[id] = addDict[id];
+		window.localStorage.setItem(id,addDict[id]);
 	}
 	
 };
@@ -51,23 +51,35 @@ function addHideButton(obj,id) {
 
 }
 
-function modifyPage(msg){
+function initPage(msg){
 	
-	console.log("message received")
+	console.log(msg);
 
-	injectHideActionScript();
-	//toggle when web extension button is pressed
-	if ((cliked = window.localStorage.getItem('buttonPressed')) == null ) {
+		if (msg == "button pressed") {
+		//toggle when web extension button is pressed
+		if ((cliked = window.localStorage.getItem('buttonPressed')) == null ) {
 
-		window.localStorage.setItem('buttonPressed',true);
-	} else if ( cliked == "false") {
-		window.localStorage.setItem('buttonPressed',true);	
-	} else {
-		window.localStorage.setItem('buttonPressed',false);
+			window.localStorage.setItem('buttonPressed',true);
+		} else if ( cliked == "false") {
+			window.localStorage.setItem('buttonPressed',true);
+
+
+
+		} else {
+			window.localStorage.setItem('buttonPressed',false);
+		}
 	}
 	
+	injectHideActionScript();
+	addDict = getAddList();
 
-	//find list of adds
+	document.body.style.border = "5px solid red";
+		
+};
+
+function getAddList() {
+/* Return a dict object with main info from add list and add hide button to the add */
+		//find list of adds
 	var ul = document.getElementsByClassName("tabsContent")[0].getElementsByTagName("ul")[0]
 	var items = ul.getElementsByTagName("li");
 	
@@ -78,7 +90,7 @@ function modifyPage(msg){
 		var addData = add.getAttribute("data-info");
 		var addInfo = JSON.parse(addData);
 		var addId = addInfo.ad_listid
-		addDict[addId] = add;
+		addList[addId] = add;
 		if (!addHideButton(add,addId)) {
 			console.log("error during creation of button for add "+addId);
 		};
@@ -86,15 +98,15 @@ function modifyPage(msg){
 		console.log("add id:"+addId);
 		
 	};
-	
-	document.body.style.border = "5px solid red";
-		
+
+	return addList
 };
 
 function checkPage() {
 
 	if (window.localStorage.getItem('buttonPressed')) {
 
+		initPage("page loaded")
 		for ( var id in hiddenId ) {
 
 			hiddenId[id].style.opacity = 0.2;

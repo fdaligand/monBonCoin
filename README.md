@@ -16,6 +16,6 @@ We add a button on each add to allow user to hide this add.
 
 ## Save id of hidden adds
 
-When user laod a add list wen page from leboncoin, if the id of the add is contained on stored value then the add is hidden. 
+When user load a add list web page from leboncoin, if the id of the add is contained on stored value for hidden add then add will be hidden. 
 When user click return from an specific add page, previous adds already hidden shall not be visible. 
 
