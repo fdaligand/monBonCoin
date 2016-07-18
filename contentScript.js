@@ -1,5 +1,8 @@
 
-var addDict = {};
+var addDict = {}; // contain all adds of a page 
+var hiddenId = {}; // contain only the hidden adds
+
+
 
 function injectHideActionScript() {
 /* inject script on web page to manage action when hide button is clicked*/
@@ -27,6 +30,7 @@ function hideAdd(msg) {
 		/* Change opacity of the add*/
 		id = msg.data.split('_')[1] //TODO remove this fucking magic number
 		addDict[id].style.opacity = 0.2;
+		hideAdd[id] = addDict[id];
 	}
 	
 };
@@ -52,6 +56,16 @@ function modifyPage(msg){
 	console.log("message received")
 
 	injectHideActionScript();
+	//toggle when web extension button is pressed
+	if ((cliked = window.localStorage.getItem('buttonPressed')) == null ) {
+
+		window.localStorage.setItem('buttonPressed',true);
+	} else if ( cliked == "false") {
+		window.localStorage.setItem('buttonPressed',true);	
+	} else {
+		window.localStorage.setItem('buttonPressed',false);
+	}
+	
 
 	//find list of adds
 	var ul = document.getElementsByClassName("tabsContent")[0].getElementsByTagName("ul")[0]
@@ -77,8 +91,21 @@ function modifyPage(msg){
 		
 };
 
+function checkPage() {
+
+	if (window.localStorage.getItem('buttonPressed')) {
+
+		for ( var id in hiddenId ) {
+
+			hiddenId[id].style.opacity = 0.2;
+			console.log("add "+id+" is hidden");
+		}
+
+	}
+}
 
 window.addEventListener('message',hideAdd);
 chrome.runtime.onMessage.addListener(modifyPage);
+window.onload = checkPage;
 
 
