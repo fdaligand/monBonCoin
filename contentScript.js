@@ -87,6 +87,7 @@ function getAddList() {
 		
 		//get data info of each add
 		var add = items[i].getElementsByTagName("a")[0]
+		// TODO: use Data Attributes (data-*) in a modern way with attribute dataset
 		var addData = add.getAttribute("data-info");
 		var addInfo = JSON.parse(addData);
 		var addId = addInfo.ad_listid
