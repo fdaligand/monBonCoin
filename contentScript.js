@@ -52,19 +52,17 @@ function addHideButton(obj,id) {
 }
 
 function initPage(msg){
+	/* Add hide button on all annonce of the page, inject script on page to interact with button*/
 	
 	console.log(msg);
 
 		if (msg == "button pressed") {
-		//toggle when web extension button is pressed
-		if ((cliked = window.localStorage.getItem('buttonPressed')) == null ) {
+			//toggle when web extension button is pressed
+			if ((cliked = window.localStorage.getItem('buttonPressed')) == null ) {
 
-			window.localStorage.setItem('buttonPressed',true);
-		} else if ( cliked == "false") {
-			window.localStorage.setItem('buttonPressed',true);
-
-
-
+				window.localStorage.setItem('buttonPressed',true);
+			} else if ( cliked == "false") {
+				window.localStorage.setItem('buttonPressed',true);
 		} else {
 			window.localStorage.setItem('buttonPressed',false);
 		}
@@ -82,6 +80,7 @@ function getAddList() {
 		//find list of adds
 	var ul = document.getElementsByClassName("tabsContent")[0].getElementsByTagName("ul")[0]
 	var items = ul.getElementsByTagName("li");
+	var addList = {};
 	
 	for (var i = 0; i < items.length ; i++) {
 		
@@ -118,7 +117,7 @@ function checkPage() {
 }
 
 window.addEventListener('message',hideAdd);
-chrome.runtime.onMessage.addListener(modifyPage);
+chrome.runtime.onMessage.addListener(initPage);
 window.onload = checkPage;
 
 
