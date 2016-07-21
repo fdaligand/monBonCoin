@@ -19,8 +19,21 @@ function injectHideActionScript() {
 		document.body.appendChild(script);
 	}
 }
+function hideAddById(id) {
+	/* hide add which correspon to id number*/
+	//TODO: add try/catch to check if id exist
+	try {
+		addDict[id].style.opacity = 0.2;
+	} catch(err) {
+		console.log("Id :"+id+" not in the current page");
+	}
+	
+	window.localStorage.setItem("mbc_"+id,addDict[id]);
+	return true;
 
-function hideAdd(msg) {
+}
+
+function hideAddOnClick(msg) {
 	/* many message is send on the web, check if it is yours*/
 	if ( msg.origin.includes("leboncoin") ) {
 
@@ -29,12 +42,11 @@ function hideAdd(msg) {
 
 		/* Change opacity of the add*/
 		id = msg.data.split('_')[1] //TODO remove this fucking magic number
-		addDict[id].style.opacity = 0.2;
-		window.localStorage.setItem(id,addDict[id]);
+		return hideAddById(id);
+		
 	}
 	
 };
-
 
 function addHideButton(obj,id) {
 	/* add a clickable button to hide add*/
@@ -68,10 +80,13 @@ function initPage(msg){
 		}
 	}
 	
-	injectHideActionScript();
-	addDict = getAddList();
+	if (window.localStorage.getItem('buttonPressed') == "true") {
+		
+		injectHideActionScript();
+		addDict = getAddList();
+		hideAddFromLocaleStorage();
 
-	document.body.style.border = "5px solid red";
+	}
 		
 };
 
@@ -102,22 +117,28 @@ function getAddList() {
 	return addList
 };
 
-function checkPage() {
+function hideAddFromLocaleStorage() {
 
-	if (window.localStorage.getItem('buttonPressed')) {
+	if (window.localStorage.getItem('buttonPressed') == "true" ) {
 
-		initPage("page loaded")
-		for ( var id in hiddenId ) {
+		/* Find id of hidden add*/
+		for (var i = 0; i< localStorage.length; i++) {
 
-			hiddenId[id].style.opacity = 0.2;
-			console.log("add "+id+" is hidden");
+			var key = localStorage.key(i);
+			if ( key.includes("mbc_") ) {
+
+				id = key.split("mbc_")[1];
+				hideAddById(id);
+				console.log("add "+id+" is hidden");
+
+			}
 		}
 
 	}
 }
 
-window.addEventListener('message',hideAdd);
+window.addEventListener('message',hideAddOnClick);
 chrome.runtime.onMessage.addListener(initPage);
-window.onload = checkPage;
+window.onload = initPage;
 
 
