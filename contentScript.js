@@ -89,6 +89,8 @@ function initPage(msg){
 				window.localStorage.setItem('buttonPressed',true);
 		} else {
 			window.localStorage.setItem('buttonPressed',false);
+			// if user click on webExtension button to deactivate it, reload the page!
+			location.reload();
 		}
 	}
 	
@@ -99,6 +101,9 @@ function initPage(msg){
 		hideAddFromLocaleStorage();
 
 	}
+
+	// if user click on webExtension button to deactivate it, reload the page!
+
 
 		
 };
