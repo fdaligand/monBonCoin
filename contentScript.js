@@ -71,7 +71,7 @@ function initPage(msg){
 	injectHideActionScript();
 	addDict = getAddList();
 
-	document.body.style.border = "5px solid red";
+	
 		
 };
 
