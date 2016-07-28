@@ -51,15 +51,27 @@ function hideAddOnClick(msg) {
 function addHideButton(obj,id) {
 	/* add a clickable button to hide add*/
 
-	var aside = obj.getElementsByClassName("item_absolute");
-	var button = document.createElement("button")
-	button.id = id;
-	button.setAttribute('onclick','sendMessage()');
-	button.innerHTML = "Hide this add";
+	if ( ! document.getElementById(id)) 
+	{
+		var aside = obj.getElementsByClassName("item_absolute");
+		var button = document.createElement("button")
+		button.id = id;
+		button.setAttribute('onclick','sendMessage()');
+		button.innerHTML = "Hide";
+		button.style.backgroundColor = "#f56b2a";
+		button.style.fontFamily = "OpenSansSemiBold ,sans-serif";
+		button.style.color = "#fff"
+		button.style.float = "right";
 
-	aside[0].appendChild(button);
 
-	return true;
+		aside[0].appendChild(button);
+		return true;
+	} else {
+		console.log("hide button already here!");
+		return false;
+	}
+
+	
 
 }
 
