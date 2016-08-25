@@ -1,7 +1,6 @@
 
 var addDict = {}; // contain all adds of a page 
 var hiddenId = {}; // contain only the hidden adds
-var request = null; // contain the request to indexedDB API
 var db = null; // contain db instance 
 
 
@@ -18,17 +17,17 @@ if (!window.indexedDB) {
    window.alert("Your browser doesn't support a stable version of IndexedDB.");
 }
 
-// dummy data for test 
-const customerData = [
-  { id: "444-464-4444", name: "Bill", age: 35, email: "bill@company.com" },
-  { id: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
-];
 
-// Delete previous DB for debug 
-var requestDelete = window.indexedDB.deleteDatabase("MonBonCoinDB");
+function deleteDB() {
+	// Delete previous DB for debug 
+	var requestDelete = window.indexedDB.deleteDatabase("MonBonCoinDB");
+};
+
+
 
 // Open the DB 
 var request = window.indexedDB.open("MonBonCoinDB",1);
+
 
 
 // Error on open 
@@ -41,14 +40,6 @@ request.onerror = function(event) {
 request.onsuccess = function(event) {
 
 	db = event.target.result; //contain the instance of DB
-	var transaction  = db.transaction(["hideAdList"],"readwrite")
-	var objectStore = transaction.objectStore("hideAdList");
-
-	for (var i in customerData) {
-  		var req = objectStore.add(customerData[i]);
-  	}
-
-
 };
 
 //Openning new DB
@@ -57,9 +48,50 @@ request.onupgradeneeded = function (event) {
 
 	var db = event.target.result;
 	// create object store for the db 
-	var objectStore = db.createObjectStore("hideAdList",{keyPath: "id"});		
+	var objectStore = db.createObjectStore("hideAdList");		
 };
 
+function saveAdInfoInDB(id) {
+
+	var transaction = db.transaction(["hideAdList"],"readwrite");
+	
+
+	transaction.onerror = function(event,id) {
+
+		console.log("error during saving of ad "+id);
+	};
+
+	transaction.oncomplete = function(event){};
+	var obj = transaction.objectStore("hideAdList");
+
+	// DOMElement can't be saved in db 
+	savedAd = addDict[id]
+	savedAd.htmlElement = "";
+
+	var rq = obj.add(savedAd,id)//addDict[id],id);
+
+	request.onsuccess = function(event,id) {
+		console.log("Ad "+id+" successfuly saved in DB!");		
+	};
+
+};
+
+function findAdInDB(id) {
+
+	// if id is in DB, hide the ad 
+	var transaction = db.transaction(["hideAdList"],"readonly")
+	var req = transaction.objectStore("hideAdList").get(id);
+
+	req.onsuccess = function(event) {
+
+		if ( event.target.result != undefined) {
+			//call method to hide ad
+			hideAddById(event.target.result.id);
+			console.log("add "+id+" is hidden");
+		}
+	}
+
+}
 
 
 
@@ -168,7 +200,8 @@ function initPage(msg){
 		
 		injectHideActionScript();
 		addDict = getAddList();
-		hideAddFromLocaleStorage();
+		hideOlderAd()
+		//hideAddFromLocaleStorage();
 
 
 
@@ -215,21 +248,26 @@ function parseAd(ad){
 		adParsed.dep = dep.trim();
 	} catch (err){
 
-	console.log("error on location parsing of id ${adParsed.id}")
+	console.log("error on location parsing of id : "+adParsed.id)
 	}
 	
 
 	// class item_price contain price !!! 
 	price = ad.getElementsByClassName("item_price")[0].innerHTML;
-	adParsed.price = price.trim();
+	adParsed.price = parseInt(price.trim());
 
 	//get image DataUrl to generate unique index
 	//TODO: manage add without photo 
 	img = ad.getElementsByClassName("lazyload loaded")[0];
-	imgDataUrl = img.dataset.imgsrc;
-	var re = /thumbs\/([a-zA-Z0-9+=\/]*).jpg$/; 
-	adParsed.imghash = re.exec(imgDataUrl)[0];
+	if (img != undefined ) {
+	    imgDataUrl = img.dataset.imgsrc;
+	    var re = /thumbs\/([a-zA-Z0-9+=\/]*).jpg$/; 
+	    adParsed.imghash = re.exec(imgDataUrl)[0];
+	} else {
+		// if no image exist, get the value of ad ID
+		adParsed.imghash = adParsed.id
 
+	}
 	// find date of the ad 
 	dateElement = ad.getElementsByClassName("item_absolute")[0];
 	date = dateElement.getElementsByClassName("item_supp")[0].innerHTML.trim()
@@ -265,12 +303,24 @@ function getAddList() {
 
 	return addList
 };
+function hideOlderAd() {
+	// hide ad that user already decide to hide ( ad saevd in db )
+	if (window.localStorage.getItem('buttonPressed') == "true" ) {
 
-function hideAddFromLocaleStorage() {
+		//get id of loaded ads
+		for (var id in addDict ) {
+
+			findAdInDB(id);
+		}
+
+	}
+
+}
+/*function hideAddFromLocaleStorage() {
 
 	if (window.localStorage.getItem('buttonPressed') == "true" ) {
 
-		/* Find id of hidden add*/
+		// Find id of hidden add
 		for (var i = 0; i< localStorage.length; i++) {
 
 			var key = localStorage.key(i);
@@ -284,7 +334,7 @@ function hideAddFromLocaleStorage() {
 		}
 
 	}
-}
+}*/
 
 window.addEventListener('message',hideAddOnClick);
 chrome.runtime.onMessage.addListener(initPage);
