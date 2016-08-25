@@ -24,7 +24,6 @@ function deleteDB() {
 };
 
 
-
 // Open the DB 
 var request = window.indexedDB.open("MonBonCoinDB",1);
 
@@ -200,16 +199,9 @@ function initPage(msg){
 		
 		injectHideActionScript();
 		addDict = getAddList();
-		hideOlderAd()
-		//hideAddFromLocaleStorage();
-
-
+		hideOlderAd();
 
 	}
-
-	// if user click on webExtension button to deactivate it, reload the page!
-
-
 		
 };
 
@@ -254,7 +246,7 @@ function parseAd(ad){
 
 	// class item_price contain price !!! 
 	price = ad.getElementsByClassName("item_price")[0].innerHTML;
-	adParsed.price = parseInt(price.trim());
+	adParsed.price = /([0-9 ]*)\&nbsp\;\€/.exec(price.trim())[1];
 
 	//get image DataUrl to generate unique index
 	//TODO: manage add without photo 
@@ -262,7 +254,7 @@ function parseAd(ad){
 	if (img != undefined ) {
 	    imgDataUrl = img.dataset.imgsrc;
 	    var re = /thumbs\/([a-zA-Z0-9+=\/]*).jpg$/; 
-	    adParsed.imghash = re.exec(imgDataUrl)[0];
+	    adParsed.imghash = re.exec(imgDataUrl)[1];
 	} else {
 		// if no image exist, get the value of ad ID
 		adParsed.imghash = adParsed.id
