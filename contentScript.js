@@ -117,7 +117,7 @@ function findAdInDB(id) {
 }
 
 function copyAdObject(obj) {
-
+	/* clone ad object without DOMElement attribut*/
 	var clone = {};
 
 	var keysList = Object.keys(obj);
