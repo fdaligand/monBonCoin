@@ -75,6 +75,30 @@ function saveAdInfoInDB(id) {
 
 };
 
+function removeAdFromDB(id) {
+	/* Remove ad from the DB */
+	var transaction = db.transaction(["hideAdList"],"readwrite");
+	
+	transaction.onerror = function(event,id) {
+
+		console.log("error during deletion of ad "+id);
+	};
+
+	transaction.oncomplete = function(event){};
+	var obj = transaction.objectStore("hideAdList");
+
+	// DOMElement can't be saved in db 
+	// As DOMElement can't be saved in indexedDB, we should copy add object 
+
+	var savedAd = copyAdObject(addDict[id])
+	var rq = obj.delete(id)//addDict[id],id);
+
+	request.onsuccess = function(event,id) {
+		console.log("Ad "+id+" successfuly deleted from DB!");		
+	};
+
+}
+
 function findAdInDB(id) {
 
 	// if id is in DB, hide the ad 
@@ -85,7 +109,7 @@ function findAdInDB(id) {
 
 		if ( event.target.result != undefined) {
 			//call method to hide ad
-			hideAddById(event.target.result.id,"true");
+			hideAddById(event.target.result.id,"true",true);
 			console.log("add "+id+" is hidden");
 		}
 	}
@@ -130,7 +154,7 @@ function injectHideActionScript() {
 		document.body.appendChild(script);
 	}
 }
-function hideAddById(id,status) {
+function hideAddById(id,status,previouslyHide) {
 	/* hide add which correspon to id number
 	new feature : depending on the status of the checkbox, hide or unhide the ad
 	*/
@@ -145,6 +169,7 @@ function hideAddById(id,status) {
 		} else {
 			element.style.background = "rgba(255,255,255,1)";
 			opac = "1";
+			removeAdFromDB(id);
 		}
 		element.getElementsByClassName("item_image")[0].style.opacity = opac;
 		infos = element.getElementsByClassName("item_infos")[0];
@@ -159,9 +184,9 @@ function hideAddById(id,status) {
 
 		checkbox = document.getElementById(id);
 
-		if (checkbox.checked == "false") {
+		if (checkbox.checked == "false" || previouslyHide == true) {
 
-			checkbox.checked = "true";
+			checkbox.checked = "true"; 
 		}
 
 
