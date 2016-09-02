@@ -64,9 +64,9 @@ function saveAdInfoInDB(id) {
 	var obj = transaction.objectStore("hideAdList");
 
 	// DOMElement can't be saved in db 
-	savedAd = addDict[id]
-	savedAd.htmlElement = "";
+	// As DOMElement can't be saved in indexedDB, we should copy add object 
 
+	var savedAd = copyAdObject(addDict[id])
 	var rq = obj.add(savedAd,id)//addDict[id],id);
 
 	request.onsuccess = function(event,id) {
@@ -85,13 +85,30 @@ function findAdInDB(id) {
 
 		if ( event.target.result != undefined) {
 			//call method to hide ad
-			hideAddById(event.target.result.id);
+			hideAddById(event.target.result.id,"true");
 			console.log("add "+id+" is hidden");
 		}
 	}
 
 }
 
+function copyAdObject(obj) {
+
+	var clone = {};
+
+	var keysList = Object.keys(obj);
+
+	for( var key of keysList ) {
+
+		if (key == "htmlElement") {
+			continue;
+		}
+
+		clone[key] = obj[key];
+	}
+
+	return clone
+}
 
 
 
@@ -113,11 +130,41 @@ function injectHideActionScript() {
 		document.body.appendChild(script);
 	}
 }
-function hideAddById(id) {
-	/* hide add which correspon to id number*/
+function hideAddById(id,status) {
+	/* hide add which correspon to id number
+	new feature : depending on the status of the checkbox, hide or unhide the ad
+	*/
 	//TODO: add try/catch to check if id exist
+	var opac = ""
 	try {
-		addDict[id].htmlElement.style.opacity = 0.2;
+		element = addDict[id].htmlElement
+		if ( status == "true" ) {
+			element.style.background = "rgba(255,0,0,0.2)";
+			opac = "0.2";
+			saveAdInfoInDB(id);
+		} else {
+			element.style.background = "rgba(255,255,255,1)";
+			opac = "1";
+		}
+		element.getElementsByClassName("item_image")[0].style.opacity = opac;
+		infos = element.getElementsByClassName("item_infos")[0];
+
+		for (var ele of infos.children ) {
+			if ( ele.className == "item_absolute") {
+		 		continue;
+		 	} else {
+		 		ele.style.opacity = opac;
+		 	}
+		}
+
+		checkbox = document.getElementById(id);
+
+		if (checkbox.checked == "false") {
+
+			checkbox.checked = "true";
+		}
+
+
 	} catch(err) {
 		console.log("Id :"+id+" not in the current page");
 	}
@@ -126,7 +173,6 @@ function hideAddById(id) {
 	   Save ad info in indexedDB 
 	*/
 
-	saveAdInfoInDB(id);
 	window.localStorage.setItem("mbc_"+id,addDict[id]);
 	return true;
 
@@ -143,7 +189,10 @@ function hideAddOnClick(msg) {
 		the form of the message is button_<ad_ID>_cliked. We take only the ID
 		*/
 		id = msg.data.split('_')[1] //TODO remove this fucking magic number
-		return hideAddById(id);
+
+		// new feature : Unhide ad 
+		status = document.getElementById(id).checked;
+		return hideAddById(id,status);
 		
 	}
 	
@@ -155,17 +204,34 @@ function addHideButton(obj,id) {
 	if ( ! document.getElementById(id)) 
 	{
 		var aside = obj.htmlElement.getElementsByClassName("item_absolute");
-		var button = document.createElement("button")
-		button.id = id;
-		button.setAttribute('onclick','sendMessage()');
-		button.innerHTML = "Hide";
+		
+		// create the label of the input 
+		var label = document.createElement("label")
+		label.htmlFor = id;		
+		label.innerHTML = "Hide";
+		label.style.backgroundColor = "#f56b2a";
+		label.style.fontFamily = "OpenSansSemiBold ,sans-serif";
+		label.style.color = "#fff"
+		label.style.float = "right";
+
+		input = document.createElement("input")
+		input.type = "checkbox";
+		input.id = id;
+		input.setAttribute("onchange","sendMessage()");
+		label.appendChild(input);
+
+
+
+	 /* button.innerHTML = "Hide";
 		button.style.backgroundColor = "#f56b2a";
 		button.style.fontFamily = "OpenSansSemiBold ,sans-serif";
 		button.style.color = "#fff"
-		button.style.float = "right";
+		button.style.float = "right"; */
 
 
-		aside[0].appendChild(button);
+		aside[0].appendChild(label);
+
+
 		return true;
 	} else {
 		console.log("hide button already here!");
