@@ -2,8 +2,10 @@
 Open a new tab, and load "my-page.html" into it.
 */
 function parsePage(tab) {
-  console.log("injecting");
-   chrome.tabs.sendMessage(tab.id,"button pressed");
+    // Why not check if tab correspond to the leboncoin.fr 
+    // check tab.url and send message only if tabs is in leboncoin.fr
+    console.log("injecting");
+    chrome.tabs.sendMessage(tab.id,"button pressed");
 }
 
 
