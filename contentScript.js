@@ -423,6 +423,7 @@ function hideOlderAd() {
 }*/
 
 window.addEventListener('message',hideAddOnClick);
+/* receive the message from backgroundScript through chrome.tabs.sendMessage*/
 chrome.runtime.onMessage.addListener(initPage);
 window.onload = initPage;
 
