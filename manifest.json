@@ -14,8 +14,9 @@
   },
 
 
-  "browser_action": {
-    "default_icon": "icons/mbc_icon.svg"
+  "page_action": {
+    "default_icon": "icons/mbc_icon.svg",
+    "default_title" : "monBonCoin Icon"
   },
 
     "content_scripts":[
@@ -27,7 +28,8 @@
   
   "permissions": [
     "*://*.mozilla.org/*",
-    "tabs"
+    "tabs",
+    "declarativeContent"
   ]
 
 
