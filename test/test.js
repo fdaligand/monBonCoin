@@ -1,5 +1,6 @@
 var assert = require('chai').assert
-var background = require('../background.js');
+var chrome = require('sinon-chrome');
+
 describe('Array', function() {
     describe('#indexOf()',function() {
         it('should return -1 when the value is not present', function () {
@@ -10,9 +11,12 @@ describe('Array', function() {
 
 describe('Background.js test', function() {
     describe("click on monBonCoin button", function(){
+        before(function() {
+            global.chrome = chrome;
+        });
         it('should call parsePage function', function(){
-            debugger;
-            background.parsePage();
+            var parsePage = require('../background');
+            parsePage.parsePageTest("dummy tab");
             assert.isOk(true,"parsePage is called");
         });
     });

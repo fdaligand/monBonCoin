@@ -4,8 +4,8 @@ Open a new tab, and load "my-page.html" into it.
 function parsePage(tab) {
     // Why not check if tab correspond to the leboncoin.fr 
     // check tab.url and send message only if tabs is in leboncoin.fr
-    console.log("injecting");
     // Send a single message to content script
+    console.log("coucou")
     chrome.tabs.sendMessage(tab.id,"button pressed");
 }
 
@@ -28,6 +28,8 @@ function parsePage(tab) {
 //     ]);
 //   });
 // });
+
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab.url.match(/.*.leboncoin.fr.*/))
     {
@@ -39,3 +41,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 Add parsePage() as a listener to clicks on the browser action.
 */
 chrome.pageAction.onClicked.addListener(parsePage);
+
+// function are exported for unit testing
+exports.parsePageTest = parsePage;
