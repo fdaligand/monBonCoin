@@ -9,27 +9,33 @@ function parsePage(tab) {
     chrome.tabs.sendMessage(tab.id,"button pressed");
 }
 
-// When the extension is installed or upgraded ...
-chrome.runtime.onInstalled.addListener(function() {
-  // Replace all rules ...
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    // With a new rule ...
-    chrome.declarativeContent.onPageChanged.addRules([
-      {
-        // That fires when a page's URL contains a 'g' ...
-        conditions: [
-          new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { urlContains: 'leboncoin' },
-          })
-        ],
-        // And shows the extension's page action.
-        actions: [ new chrome.declarativeContent.ShowPageAction() ]
-      }
-    ]);
-  });
+// // When the extension is installed or upgraded ...
+// chrome.runtime.onInstalled.addListener(function() {
+//   // Replace all rules ...
+//   chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+//     // With a new rule ...
+//     chrome.declarativeContent.onPageChanged.addRules([
+//       {
+//         // That fires when a page's URL contains a 'g' ...
+//         conditions: [
+//           new chrome.declarativeContent.PageStateMatcher({
+//             pageUrl: { urlContains: 'leboncoin' },
+//           })
+//         ],
+//         // And shows the extension's page action.
+//         actions: [ new chrome.declarativeContent.ShowPageAction() ]
+//       }
+//     ]);
+//   });
+// });
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab.url.match(/.*.leboncoin.fr.*/))
+    {
+        chrome.pageAction.show(tab.id);
+    }
 });
 
 /*
 Add parsePage() as a listener to clicks on the browser action.
 */
-chrome.browserAction.onClicked.addListener(parsePage);
+chrome.pageAction.onClicked.addListener(parsePage);

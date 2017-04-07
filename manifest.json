@@ -15,7 +15,7 @@
 
 
   "page_action": {
-    "default_icon": "icons/check.png",
+    "default_icon": "icons/monboncoinBrowserButton.png",
     "default_title" : "monBonCoin Icon"
   },
 
