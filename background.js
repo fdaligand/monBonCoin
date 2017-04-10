@@ -5,8 +5,17 @@ function parsePage(tab) {
     // Why not check if tab correspond to the leboncoin.fr 
     // check tab.url and send message only if tabs is in leboncoin.fr
     // Send a single message to content script
-    console.log("coucou")
-    chrome.tabs.sendMessage(tab.id,"button pressed");
+    //console.log("coucou");
+    //console.log("coucou");
+    console.log("id : ",tab.id);
+    if (typeof tab.id === "number") {
+        chrome.tabs.sendMessage(tab.id,"button pressed");
+        console.log(chrome.tabs);
+    }
+    else
+    {
+        throw new TypeError("Tab have no id or wrong type");
+    }
 }
 
 // // When the extension is installed or upgraded ...
