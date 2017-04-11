@@ -2,15 +2,9 @@
 Open a new tab, and load "my-page.html" into it.
 */
 function parsePage(tab) {
-    // Why not check if tab correspond to the leboncoin.fr 
-    // check tab.url and send message only if tabs is in leboncoin.fr
     // Send a single message to content script
-    //console.log("coucou");
-    //console.log("coucou");
-    console.log("id : ",tab.id);
     if (typeof tab.id === "number") {
         chrome.tabs.sendMessage(tab.id,"button pressed");
-        console.log(chrome.tabs);
     }
     else
     {
@@ -40,6 +34,7 @@ function parsePage(tab) {
 
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // check tab.url and send message only if tabs is in leboncoin.fr
     if (tab.url.match(/.*.leboncoin.fr.*/))
     {
         chrome.pageAction.show(tab.id);
