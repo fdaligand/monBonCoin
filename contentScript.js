@@ -2,52 +2,44 @@
 var addDict = {}; // contain all adds of a page 
 var hiddenId = {}; // contain only the hidden adds
 var db = null; // contain db instance 
-
+const LOCALSTORAGEKEY = "buttonPressed"
 
 
 /******** IndexedDB code *********************************/
 
-// Test compatibilities 
-window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
- 
-window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
- 
 if (!window.indexedDB) {
-   window.alert("Your browser doesn't support a stable version of IndexedDB.");
+   //window.alert("Your browser doesn't support a stable version of IndexedDB.");
+   console.log("Your browser doesn't support a stable version of IndexedDB.");
+}
+else
+{
+    // Test compatibilities 
+    window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    
+    // Open the DB 
+    var request = window.indexedDB.open("MonBonCoinDB",1);
+    // Error on open 
+    request.onerror = function(event) {
+    console.log("Openning of DB fail");
+    };
+    // Open is ok 
+    request.onsuccess = function(event) {
+    db = event.target.result; //contain the instance of DB
+    };
+    //Openning new DB
+    request.onupgradeneeded = function (event) {
+        var db = event.target.result;
+        // create object store for the db 
+        var objectStore = db.createObjectStore("hideAdList");
+    };
 }
 
 
 function deleteDB() {
     // Delete previous DB for debug 
     var requestDelete = window.indexedDB.deleteDatabase("MonBonCoinDB");
-};
-
-
-// Open the DB 
-var request = window.indexedDB.open("MonBonCoinDB",1);
-
-
-
-// Error on open 
-request.onerror = function(event) {
-
-    console.log("Openning of DB fail");
-};
-
-// Open is ok 
-request.onsuccess = function(event) {
-
-    db = event.target.result; //contain the instance of DB
-};
-
-//Openning new DB
-
-request.onupgradeneeded = function (event) {
-
-    var db = event.target.result;
-    // create object store for the db 
-    var objectStore = db.createObjectStore("hideAdList");       
 };
 
 function saveAdInfoInDB(id) {
@@ -203,7 +195,7 @@ function hideAddById(id,status,previouslyHide) {
 
 }
 
-function hideAddOnClick(msg) {
+function hideAdOnClick(msg) {
     /* many message is send on the web, check if it is yours*/
     if ( msg.origin.includes("leboncoin") && msg.data.includes("monboncoin_button")) {
 
@@ -269,33 +261,25 @@ function addHideButton(obj,id) {
 
 }
 
-function initPage(msg){
+function initPage(){
     /* Add hide button on all annonce of the page, inject script on page to interact with button*/
-    
-    console.log(msg);
-
-        if (msg == "button pressed") {
-            //toggle when web extension button is pressed
-            if ((cliked = window.localStorage.getItem('buttonPressed')) == null ) {
-
-                window.localStorage.setItem('buttonPressed',true);
-            } else if ( cliked == "false") {
-                window.localStorage.setItem('buttonPressed',true);
-        } else {
-            window.localStorage.setItem('buttonPressed',false);
-            // if user click on webExtension button to deactivate it, reload the page!
-            location.reload();
-        }
+    //toggle when web extension button is pressed
+    if (window.localStorage.getItem(LOCALSTORAGEKEY) == null ) {
+        console.log("button pressed was undefined, set it to false");
+        window.localStorage.setItem(LOCALSTORAGEKEY,false);
     }
-    
-    if (window.localStorage.getItem('buttonPressed') == "true") {
-        
+    else if ( window.localStorage.getItem(LOCALSTORAGEKEY) == false) {
+        window.localStorage.setItem(LOCALSTORAGEKEY,true);
+    } 
+    else {
+        window.localStorage.setItem(LOCALSTORAGEKEY,false);
+        // if user click on webExtension button to deactivate it, reload the page!
+    }
+    if (window.localStorage.getItem(LOCALSTORAGEKEY) == "true") {
         injectHideActionScript();
         addDict = getAddList();
         hideOlderAd();
-
     }
-        
 };
 
 function parseAd(ad){
@@ -391,7 +375,7 @@ function getAddList() {
 };
 function hideOlderAd() {
     // hide ad that user already decide to hide ( ad saevd in db )
-    if (window.localStorage.getItem('buttonPressed') == "true" ) {
+    if (window.localStorage.getItem(LOCALSTORAGEKEY) == "true" ) {
 
         //get id of loaded ads
         for (var id in addDict ) {
@@ -402,29 +386,20 @@ function hideOlderAd() {
     }
 
 }
-/*function hideAddFromLocaleStorage() {
 
-    if (window.localStorage.getItem('buttonPressed') == "true" ) {
-
-        // Find id of hidden add
-        for (var i = 0; i< localStorage.length; i++) {
-
-            var key = localStorage.key(i);
-            if ( key.includes("mbc_") ) {
-
-                id = key.split("mbc_")[1];
-                hideAddById(id);
-                console.log("add "+id+" is hidden");
-
-            }
-        }
-
-    }
-}*/
-
-window.addEventListener('message',hideAddOnClick);
+window.addEventListener('message',hideAdOnClick);
 /* receive the message from backgroundScript through chrome.tabs.sendMessage*/
-chrome.runtime.onMessage.addListener(initPage);
+chrome.runtime.onMessage.addListener((msg,sender,sendResponse) => {
+
+    if (msg == "button pressed") {
+        initPage();
+        sendResponse();
+        return true;
+    }
+});
 window.onload = initPage;
 
-
+// Export function for unit test 
+exports.hideAdOnClick = hideAdOnClick;
+exports.initPage = initPage;
+exports.injectHideActionScript = injectHideActionScript;
